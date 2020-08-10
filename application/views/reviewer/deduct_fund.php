@@ -7,7 +7,7 @@
             }
 
             body {
-                background: -webkit-linear-gradient(bottom, #2dbd6e, #a6f77b);
+                background: -webkit-linear-gradient(bottom, #808080);
                 background-repeat: no-repeat;
             }
 
@@ -22,7 +22,7 @@
                 box-shadow: 1px 2px 8px rgba(0, 0, 0, 0.65);
                 height: auto;
                 margin: 6rem auto 8.1rem auto;
-                width: 329px;
+                width: 400px;
             }
 
             #card-contenta {
@@ -54,8 +54,8 @@
                 color: white;
                 font-family: "Raleway SemiBold", sans-serif;
                 height: 42.3px;
-                margin: 0 auto;
-                margin-top: 50px;
+                margin: 70px;
+                margin-top: 25px;
                 transition: 0.25s;
                 width: 153px;
             }
@@ -87,7 +87,7 @@
                 background: -webkit-linear-gradient(right, #a6f77b, #2ec06f);
                 height: 2px;
                 margin: -1.1rem auto 0 auto;
-                width: 89px;
+                width: 190px;
             }
         </style>
     </head>
@@ -96,21 +96,31 @@
         <div id="carda">
             <div id="card-contenta">
                 <div id="card-title">
-                    <h2>LOGIN</h2>
+                    <h2>Deduct Fund</h2>
                     <div class="underline-title"></div>
+                    <p>
+                        Please don't deduct fund more than your credits.
+                        <p><?php if (strlen($msg) > 0) echo $msg; ?></p>
+                    </p>
                 </div>
-                <p><?php if (strlen($msg) > 0) echo $msg; ?></p>
-                <form class="forma" action="<?php echo base_url() . 'index.php/accountCtl/checkingLogin'; ?>" method="post">
-                    <label for="user-username" style="padding-top:13px" data-validate="masukan username">&nbsp;Username
+                <form action="<?php echo base_url() . 'index.php/reviewerCtl/deductFunding'; ?>" method="post">
+                    <label style="padding-top:13px">&nbsp;Username
                     </label>
-                    <input style="border:none; background: transparent" class="form-contenta" type="text" id="username" name="username" data-placeholder="Username" required />
+                    <input style="border:none; background: transparent" class="form-contenta" type="text" id="username" name="username" value="<?= $username; ?>" readonly />
                     <div class="form-bordera"></div>
-                    <label for="user-password" style="padding-top:22px" data-validate="masukan password">&nbsp;Password
+                    <label style="padding-top:13px">&nbsp;Your Account Number
                     </label>
-                    <input style="border:none; background: transparent" class=" form-contenta" type="password" id="katasandi" name="katasandi" data-placeholder="Password" required />
+                    <input style="border:none; background: transparent" class="form-contenta" type="text" id="no_rek" name="no_rek" value="<?= $saldo[0]['no_rek']; ?>" readonly />
                     <div class="form-bordera"></div>
-                    <input id="submit-btn" type="submit" name="submit" value="LOGIN" />
-                    <a href="<?php echo base_url() . 'welcome/signup'; ?>" id="signup">Don't have account yet?</a>
+                    <label style="padding-top:13px">&nbsp;Your Balance
+                    </label>
+                    <input style="border:none; background: transparent" class="form-contenta" type="text" id="saldo" name="saldo" value="<?= $saldo[0]['saldo']; ?>" readonly />
+                    <div class="form-bordera"></div>
+                    <label style="padding-top:22px">&nbsp;Deduct Fund Credits
+                    </label>
+                    <input style="border:none; background: transparent" class="form-contenta" type="text" id="potongansaldo" name="potongansaldo" required="required" />
+                    <div class="form-bordera"></div>
+                    <input id="submit-btn" type="submit" name="submit" value="Proses" />
                 </form>
             </div>
         </div>

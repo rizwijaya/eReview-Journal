@@ -7,7 +7,7 @@
             }
 
             body {
-                background: -webkit-linear-gradient(bottom, #2dbd6e, #a6f77b);
+                background: -webkit-linear-gradient(bottom, #808080);
                 background-repeat: no-repeat;
             }
 
@@ -22,7 +22,7 @@
                 box-shadow: 1px 2px 8px rgba(0, 0, 0, 0.65);
                 height: auto;
                 margin: 6rem auto 8.1rem auto;
-                width: 329px;
+                width: 400px;
             }
 
             #card-contenta {
@@ -54,8 +54,8 @@
                 color: white;
                 font-family: "Raleway SemiBold", sans-serif;
                 height: 42.3px;
-                margin: 0 auto;
-                margin-top: 50px;
+                margin: 70px;
+                margin-top: 25px;
                 transition: 0.25s;
                 width: 153px;
             }
@@ -87,7 +87,7 @@
                 background: -webkit-linear-gradient(right, #a6f77b, #2ec06f);
                 height: 2px;
                 margin: -1.1rem auto 0 auto;
-                width: 89px;
+                width: auto;
             }
         </style>
     </head>
@@ -96,22 +96,38 @@
         <div id="carda">
             <div id="card-contenta">
                 <div id="card-title">
-                    <h2>LOGIN</h2>
+                    <h2>Add New Reviewing Task</h2>
                     <div class="underline-title"></div>
+                    <p>
+                        Please fill in data about the article that you would like to be reviewed!
+                        <?php if (strlen($error) > 0) {  ?>
+                            <br />
+                            <div class="alert alert-danger" role="alert"><?php echo $error; ?> </div>
+                        <?php }  ?>
+                    </p>
                 </div>
-                <p><?php if (strlen($msg) > 0) echo $msg; ?></p>
-                <form class="forma" action="<?php echo base_url() . 'index.php/accountCtl/checkingLogin'; ?>" method="post">
-                    <label for="user-username" style="padding-top:13px" data-validate="masukan username">&nbsp;Username
-                    </label>
-                    <input style="border:none; background: transparent" class="form-contenta" type="text" id="username" name="username" data-placeholder="Username" required />
-                    <div class="form-bordera"></div>
-                    <label for="user-password" style="padding-top:22px" data-validate="masukan password">&nbsp;Password
-                    </label>
-                    <input style="border:none; background: transparent" class=" form-contenta" type="password" id="katasandi" name="katasandi" data-placeholder="Password" required />
-                    <div class="form-bordera"></div>
-                    <input id="submit-btn" type="submit" name="submit" value="LOGIN" />
-                    <a href="<?php echo base_url() . 'welcome/signup'; ?>" id="signup">Don't have account yet?</a>
-                </form>
+                <?= form_open_multipart(base_url() . 'index.php/editorCtl/addingTask'); ?>
+                <label style="padding-top:13px">&nbsp;Judul
+                </label>
+                <input style="border:none; background: transparent" class="form-contenta" type="text" id="judul" name="judul" required />
+                <div class="form-bordera"></div>
+                <label style="padding-top:13px">&nbsp;Keywords
+                </label>
+                <input style="border:none; background: transparent" class="form-contenta" type="text" id="keywords" name="keywords" required />
+                <div class="form-bordera"></div>
+                <label style="padding-top:13px">&nbsp;Authors
+                </label>
+                <input style="border:none; background: transparent" class="form-contenta" type="text" id="authors" name="authors" required />
+                <div class="form-bordera"></div>
+                <label style="padding-top:13px">&nbsp;Number of Page(s)
+                </label>
+                <input style="border:none; background: transparent" class="form-contenta" type="number" id="page" name="page" required />
+                <div class="form-bordera"></div>
+                <label style="padding-top:22px">&nbsp;Article
+                </label>
+                <input style="border:none; background: transparent" class=" form-contenta" type="file" id="userfile" name="userfile" required />
+                <input id="submit-btn" type="submit" name="submit" value="UPLOAD" />
+                <?= form_close(); ?>
             </div>
         </div>
 </section>

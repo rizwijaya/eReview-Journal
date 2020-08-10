@@ -4,26 +4,40 @@ defined('BASEPATH') or exit('No direct script access allowed');
 class ManageMyTask extends CI_Controller
 {
 
-	public function __construct()
-	{
-		parent::__construct();
-		$this->load->model(array('Task', 'Reviewer', 'Payment'));
-	}
-
 	public function index()
 	{
-		echo "<h1>Selamat datang di Manage My Task!</h1>";
-		echo "<a href='http://localhost/ereview/index.php/manageMyTask/addNewTask'>Add New Task</a><br>";
-		echo "<a href='http://localhost/ereview/index.php/manageMyTask/confirmTaskCompletion'>Confirm Task Completion</a><br>";
+		if (!$this->session->userdata('logged_in')) {
+			redirect('welcome/index');
+			return;
+		}
+		$session_data = $this->session->userdata('logged_in');
+
+		$this->load->model(array('reviewer'));
+		$saldo = $this->reviewer->getBalance($session_data['id_user']);
+		$this->load->view('common/header_' . $session_data['nama_grup'], array(
+			"nama_user" => $session_data['namalengkap'],
+			"current_role" => $session_data['nama_grup'],
+			"saldo" => $saldo
+		));
+		$this->load->view('common/topmenu');
+		$this->load->view('common/content');
+		$this->load->view('common/footer');
 	}
 
-	public function AddNewTask($pesan = '')
+	public function addNewTask($pesan = '')
 	{
-		$this->load->view('editor/AddNewTask', array('msg' => $pesan));
+		$this->load->helper('form');
+		$this->load->view(
+			'editor/AddNewTask',
+			array('msg' => $pesan)
+		);
 	}
 
-	public function AddingNewTask()
+	public function addingNewTask()
 	{
+		$this->load->helper(array('url', 'security'));
+		$this->load->model('task');
+		$this->load->library(array('form_validation'));
 
 		$this->form_validation->set_rules(
 			'judul',
@@ -32,41 +46,75 @@ class ManageMyTask extends CI_Controller
 		);
 		$this->form_validation->set_rules(
 			'katakunci',
-			'Kata Kunci',
+			'Kata kunci',
 			'trim|min_length[2]|max_length[50]|xss_clean'
 		);
 
 		$res = $this->form_validation->run();
 		if ($res == FALSE) {
 			$msg = validation_errors();
-			$this->load->view('editor/AddNewTask', array('msg' => $msg));
+			$this->load->view(
+				'editor/AddNewTask',
+				array('msg' => $msg)
+			);
 			return FALSE;
 		}
-
-		$id_task = $this->Task->insertNewTask();
-		redirect('ManageMyTask/SelectPotentialReviewer/' . $id_task);
+		$id_task = $this->task->insertNewTask();
+		redirect('managemytask/selectReviewer/' . $id_task);
 	}
 
-	public function SelectPotentialReviewer($id_task = -1)
+	function selectPotentialReviewer($id_task = -1)
 	{
-		$thetask = $this->Task->getTheTask($id_task);
-		$reviewers = $this->Reviewer->getAllReviewers();
-		$this->load->view(
-			'editor/SelectPotentialReviewer',
-			array(
-				'task' => $thetask[0],
-				'reviewers' => $reviewers
-			)
-		);
+		if (!$this->session->userdata('logged_in')) {
+			redirect('welcome/index');
+		}
+		$session_data = $this->session->userdata('logged_in');
+
+		if ($session_data['nama_grup'] != 'editor') {
+			redirect('welcome/redirecting');
+		}
+		//load model
+		$this->load->model(array('reviewer'));
+		//$this->load->model(array('task', 'reviewer'));
+		//$tasks = $this->task->getTheTask($id_task);
+		$reviewers = $this->reviewer->getAllReviewers();
+
+		//$tasks=$this->task->getMyTask($session_data['id_user']);
+
+		$this->load->view('common/header_editor', array(
+			"nama_user" => $session_data['namalengkap'],
+			"current_role" => $session_data['nama_grup']
+		));
+		$this->load->view('editor/selectpotential', array("reviewers" => $reviewers, "id_task" => $id_task));
+		//biar bisa menampilkan nama2 reviewer, dengan membawa id_task sebelumnya
+		$this->load->view('common/content');
+		$this->load->view('common/footer');
+		/*$this->load->view('editor/selectpotential', 
+                array('task' => $thetask [0], 'reviewers' => $reviewers) );*/
 	}
 
-	public function CommitPayment()
+	function requestedTask($id_task = -1, $id_reviewer = -1)
 	{
-		$this->load->view('editor/CommitPayment');
-	}
+		if (!$this->session->userdata('logged_in')) {
+			redirect('Welcome/index');
+		}
+		$session_data = $this->session->userdata('logged_in');
 
-	public function ConfirmTaskCompletion()
-	{
-		$this->load->view('editor/ConfirmTaskCompletion');
+		if ($session_data['nama_grup'] != 'editor') {
+			redirect('Welcome/redirecting');
+		}
+
+		$this->load->model('Reviewer');
+		$assignments = $this->Reviewer->getPotential($id_task, $id_reviewer);
+
+		if (sizeof(array($assignments)) > 0) {
+			$this->load->view('common/header_editor', array(
+				"nama_user" => $session_data['namalengkap'],
+				"current_role" => $session_data['nama_grup']
+			));
+			$this->load->view('editor/add_success');
+			$this->load->view('common/content');
+			$this->load->view('common/footer');
+		}
 	}
 }
